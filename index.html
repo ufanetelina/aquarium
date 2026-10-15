@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Твой аквариум</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;1,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --abyss:#04212b;
+    --deep:#0a3a49;
+    --reef:#0f4c5c;
+    --lagoon:#1c8098;
+    --foam:#eef8f7;
+    --coral:#ff7a59;
+    --coral-dark:#e8582f;
+    --sand:#e8c98a;
+    --sand-dark:#c99e5c;
+    --ink:#062229;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Nunito',sans-serif;
+    color:var(--foam);
+    background:var(--abyss);
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.brand,.btn,.step-num{font-family:'Baloo 2',cursive;}
+
+  /* ---------- HERO / AQUARIUM ---------- */
+  .tank{
+    position:relative;
+    width:100%;
+    height:100vh;
+    min-height:560px;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse at 30% 0%, rgba(255,255,255,0.10), transparent 55%),
+      linear-gradient(180deg, #1e8fa6 0%, #146d84 22%, #0f4c5c 46%, #0a3a49 70%, #04212b 100%);
+  }
+
+  .sunbeams{
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(
+      100deg,
+      rgba(255,255,255,0.05) 0px,
+      rgba(255,255,255,0.05) 22px,
+      transparent 22px,
+      transparent 90px
+    );
+    mix-blend-mode:screen;
+    opacity:.55;
+    pointer-events:none;
+  }
+
+  .bubble{
+    position:absolute;
+    bottom:-40px;
+    border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.85), rgba(255,255,255,0.05) 70%);
+    opacity:.55;
+    animation:rise linear infinite;
+    pointer-events:none;
+  }
+  @keyframes rise{
+    0%{ transform:translateY(0) translateX(0); opacity:.6;}
+    90%{ opacity:.5;}
+    100%{ transform:translateY(-115vh) translateX(20px); opacity:0;}
+  }
+
+  .weed{
+    position:absolute;
+    bottom:0;
+    transform-origin:bottom center;
+    animation:sway 5s ease-in-out infinite;
+    opacity:.9;
+  }
+  @keyframes sway{
+    0%,100%{ transform:rotate(-4deg);}
+    50%{ transform:rotate(5deg);}
+  }
+
+  .sandbed{
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:64px;
+    background:linear-gradient(180deg, var(--sand) 0%, var(--sand-dark) 100%);
+    clip-path: polygon(0 40%, 6% 30%, 14% 45%, 24% 28%, 34% 42%, 46% 25%, 58% 40%, 70% 24%, 82% 38%, 92% 26%, 100% 36%, 100% 100%, 0 100%);
+  }
+
+  .fish-sprite{
+    position:absolute;
+    top:0; left:0;
+    will-change:transform;
+    pointer-events:none;
+    filter:drop-shadow(0 6px 10px rgba(0,0,0,0.25));
+  }
+
+    #fishLayer, #adLayer{ position:absolute; inset:0; pointer-events:none; }
+  #fishLayer{ z-index:8; }
+  #adLayer{ z-index:9; }
+  .ad-sprite{ pointer-events:auto; }
+
+  /* ---------- HEADER / NAV ---------- */
+  .nav{
+    position:absolute;
+    top:0; left:0; right:0;
+    z-index:20;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:26px 5vw 0;
+  }
+  .brand{
+    font-size:1.5rem;
+    font-weight:700;
+    color:var(--foam);
+    letter-spacing:.2px;
+  }
+  .brand span{ color:#8fe3d8; }
+
+  .fish-count{
+    font-family:'Nunito',sans-serif;
+    font-size:.85rem;
+    font-weight:700;
+    color:#bfe9e2;
+    margin-top:4px;
+  }
+  .sync-status{
+    font-size:.72rem;
+    color:rgba(191,233,226,.65);
+    margin-top:2px;
+  }
+
+  .btn{
+    border:none;
+    cursor:pointer;
+    font-weight:600;
+    font-size:1rem;
+    border-radius:999px;
+    padding:14px 26px;
+    background:var(--coral);
+    color:#fff5f0;
+    box-shadow:0 8px 20px rgba(255,122,89,0.35);
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .btn:hover{ transform:translateY(-2px); background:var(--coral-dark); box-shadow:0 10px 24px rgba(255,122,89,0.45);}
+  .btn:active{ transform:translateY(0);}
+  .btn-ghost{
+    background:transparent;
+    border:2px solid rgba(238,248,247,.5);
+    color:var(--foam);
+    box-shadow:none;
+  }
+  .btn-ghost:hover{ background:rgba(238,248,247,.12); box-shadow:none;}
+
+  /* ---------- HERO TEXT ---------- */
+  .hero-copy{
+    position:absolute;
+    left:5vw;
+    bottom:110px;
+    z-index:5;
+    max-width:460px;
+  }
+  .hero-copy h1{
+    font-size:clamp(2rem, 4.2vw, 3.2rem);
+    line-height:1.06;
+    margin:0 0 14px;
+    font-weight:700;
+  }
+  .hero-copy p{
+    margin:0;
+    font-size:1.05rem;
+    line-height:1.5;
+    color:#d9f1ee;
+    max-width:38ch;
+  }
+
+  /* ---------- HOW IT WORKS ---------- */
+  .steps{
+    background:linear-gradient(180deg, var(--sand-dark), #b98a49);
+    padding:70px 5vw 80px;
+  }
+  .steps-inner{
+    max-width:920px;
+    margin:0 auto;
+  }
+  .steps h2{
+    color:var(--ink);
+    font-size:1.8rem;
+    margin:0 0 40px;
+  }
+  .step-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:28px;
+  }
+  .step{
+    background:rgba(255,255,255,0.18);
+    border:1px solid rgba(255,255,255,0.35);
+    border-radius:18px;
+    padding:22px 20px;
+  }
+  .step-num{
+    font-size:1.6rem;
+    font-weight:700;
+    color:var(--ink);
+    display:block;
+    margin-bottom:8px;
+  }
+  .step p{
+    margin:0;
+    color:#3a2a12;
+    font-size:.98rem;
+    line-height:1.45;
+  }
+  @media (max-width:760px){
+    .step-grid{ grid-template-columns:1fr; }
+    .hero-copy{ bottom:150px; }
+  }
+
+  /* ---------- EDITOR OVERLAY ---------- */
+  .editor{
+    position:fixed;
+    inset:0;
+    z-index:100;
+    background:linear-gradient(180deg, #073b4a, #04212b);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    transform:translateY(100%);
+    transition:transform .38s cubic-bezier(.2,.8,.25,1);
+  }
+  .editor.open{ transform:translateY(0); }
+
+  .editor-top{
+    width:100%;
+    max-width:640px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:20px 20px 6px;
+  }
+  .editor-top h2{
+    margin:0;
+    font-size:1.35rem;
+  }
+  .icon-btn{
+    background:none;
+    border:none;
+    color:var(--foam);
+    font-size:1.5rem;
+    cursor:pointer;
+    line-height:1;
+    padding:6px 10px;
+    border-radius:10px;
+  }
+  .icon-btn:hover{ background:rgba(255,255,255,.1); }
+
+  .canvas-wrap{
+    position:relative;
+    width:min(88vw, 480px);
+    aspect-ratio:300/190;
+    margin:10px auto 6px;
+    background:radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.06), transparent 70%);
+    border-radius:20px;
+    touch-action:none;
+  }
+  .canvas-wrap canvas{
+    position:absolute;
+    top:0; left:0;
+    width:100%;
+    height:100%;
+  }
+  #paintCanvas, #outlineCanvas{ pointer-events:none; }
+  #inputCanvas{ pointer-events:auto; cursor:crosshair; }
+
+  .tools{
+    width:100%;
+    max-width:640px;
+    padding:14px 20px 28px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  .swatches{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+  }
+  .swatch{
+    width:34px; height:34px;
+    border-radius:50%;
+    border:2px solid rgba(255,255,255,.5);
+    cursor:pointer;
+    padding:0;
+  }
+  .swatch.active{
+    border-color:#fff;
+    box-shadow:0 0 0 3px rgba(255,255,255,.35);
+  }
+  .colorpick{
+    width:34px;height:34px;
+    border-radius:50%;
+    border:2px solid rgba(255,255,255,.5);
+    padding:0;
+    background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red);
+    cursor:pointer;
+  }
+  .row{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .row label{
+    font-size:.9rem;
+    color:#bfe9e2;
+    font-weight:600;
+  }
+  input[type=range]{ accent-color: var(--coral); flex:1; min-width:100px; }
+  .tool-buttons{ display:flex; gap:10px; margin-left:auto; }
+  .tool-buttons button{
+    font-family:'Nunito',sans-serif;
+    font-weight:700;
+    font-size:.85rem;
+    background:rgba(255,255,255,.08);
+    color:var(--foam);
+    border:1px solid rgba(255,255,255,.25);
+    border-radius:10px;
+    padding:8px 14px;
+    cursor:pointer;
+  }
+  .tool-buttons button:hover{ background:rgba(255,255,255,.18); }
+
+  .send-row{
+    display:flex;
+    justify-content:center;
+    padding-top:4px;
+  }
+  .send-row .btn{ width:100%; max-width:320px; text-align:center; }
+
+  .toast{
+    position:fixed;
+    left:50%;
+    bottom:36px;
+    transform:translate(-50%, 20px);
+    background:#0f4c5c;
+    border:1px solid rgba(255,255,255,.25);
+    color:var(--foam);
+    padding:14px 22px;
+    border-radius:14px;
+    font-weight:700;
+    z-index:200;
+    opacity:0;
+    transition:opacity .25s ease, transform .25s ease;
+    pointer-events:none;
+  }
+  .toast.show{ opacity:1; transform:translate(-50%, 0); }
+
+  /* ---------- AD MODAL ---------- */
+  [hidden]{ display:none !important; }
+  .ad-sprite{ cursor:pointer; }
+  #adModal{ border:none; padding:0; border-radius:20px; color:var(--foam); width:min(92vw,440px); max-height:90vh;
+    background:linear-gradient(180deg,#0d4a5b,#06303c); box-shadow:0 20px 60px rgba(0,0,0,.5); }
+  #adModal::backdrop{ background:rgba(2,16,22,.72); }
+  .adbox{ padding:22px; display:flex; flex-direction:column; gap:16px; }
+  .adhead{ display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .adhead h2{ margin:0; font-size:1.4rem; }
+  #adForm{ display:flex; flex-direction:column; gap:12px; }
+  #adForm label{ display:flex; flex-direction:column; gap:6px; font-weight:700; font-size:.9rem; color:#bfe9e2; }
+  #adForm input{ font:inherit; color:var(--foam); background:rgba(0,0,0,.28); border:1px solid rgba(255,255,255,.25);
+    border-radius:10px; padding:11px 12px; }
+  #adForm input:focus-visible, #adLink:focus-visible{ outline:3px solid #8fe3d8; outline-offset:2px; }
+  .ad-discount{ margin:0; font-family:'Baloo 2',cursive; font-size:2rem; font-weight:700; color:#ffd166; line-height:1.1; }
+  .ad-promo{ margin:0; font-size:1.1rem; }
+  .ad-promo b{ background:rgba(255,255,255,.12); border:1px dashed rgba(255,255,255,.5); border-radius:8px;
+    padding:3px 10px; letter-spacing:.05em; user-select:all; }
+  #adQrWrap{ display:flex; flex-direction:column; gap:10px; align-items:flex-start; }
+  .ad-scan{ margin:0; font-weight:700; color:#bfe9e2; }
+  .ad-err{ margin:0; color:#ffb4a2; font-weight:700; min-height:1.2em; }
+  #adThanks{ margin:0; font-weight:700; color:#8fe3d8; }
+  .ad-bottom{ display:flex; flex-direction:column; gap:12px; border-top:1px solid rgba(255,255,255,.18); padding-top:16px; }
+  .ad-info{ white-space:pre-wrap; line-height:1.5; color:#d9f1ee; }
+  .ad-qr{ background:#fff; padding:10px; border-radius:12px; width:fit-content; line-height:0; }
+  #adLink{ color:#8fe3d8; overflow-wrap:anywhere; font-size:.9rem; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+  <section class="tank" id="tank">
+    <div class="sunbeams"></div>
+    <div id="bubbleLayer"></div>
+    <div id="weedLayer"></div>
+    <div class="sandbed"></div>
+    <div id="fishLayer"></div>
+    <div id="adLayer"></div>
+
+    <nav class="nav">
+      <div>
+        <div class="brand">аква<span>риум</span></div>
+        <div class="fish-count" id="fishCount">0 рыбок плавает здесь</div>
+        <div class="sync-status" id="syncStatus"></div>
+      </div>
+      <button class="btn" id="openEditor">+ Нарисовать рыбку</button>
+    </nav>
+
+    <div class="hero-copy">
+      <h1>Нарисуй рыбку — и она поплывёт здесь навсегда</h1>
+      <p>Разукрась шаблон в своём стиле и отправь его в общий аквариум. Каждая рыбка получает свой характер: скорость, размер и маршрут.</p>
+    </div>
+  </section>
+
+  <section class="steps">
+    <div class="steps-inner">
+      <h2>Как это работает</h2>
+      <div class="step-grid">
+        <div class="step">
+          <span class="step-num">1</span>
+          <p>Нажми «Нарисовать рыбку» — откроется редактор с пустым шаблоном.</p>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <p>Выбери цвет и закрась рыбку кистью прямо внутри контура.</p>
+        </div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <p>Отправь рыбку — она появится в аквариуме и поплывёт вместе с остальными.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDITOR -->
+  <div class="editor" id="editor">
+    <div class="editor-top">
+      <h2>Разрисуй свою рыбку</h2>
+      <button class="icon-btn" id="closeEditor" aria-label="Закрыть">✕</button>
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="paintCanvas" width="300" height="190"></canvas>
+      <canvas id="outlineCanvas" width="300" height="190"></canvas>
+      <canvas id="inputCanvas" width="300" height="190"></canvas>
+    </div>
+
+    <div class="tools">
+      <div class="row">
+        <div class="swatches" id="swatches"></div>
+        <input type="color" class="colorpick" id="colorPick" title="Свой цвет" value="#ff8a5b">
+      </div>
+      <div class="row">
+        <label for="brush">Кисть</label>
+        <input type="range" id="brush" min="4" max="30" value="14">
+        <div class="tool-buttons">
+          <button id="clearBtn">Очистить</button>
+        </div>
+      </div>
+      <div class="send-row">
+        <button class="btn" id="sendFish">Отправить в аквариум</button>
+      </div>
+    </div>
+  </div>
+
+  <dialog id="adModal" aria-labelledby="adTitle">
+    <div class="adbox">
+      <div class="adhead">
+        <h2 id="adTitle"></h2>
+        <button class="icon-btn" id="adClose" aria-label="Закрыть">✕</button>
+      </div>
+      <p class="ad-discount" id="adDiscount"></p>
+      <p class="ad-promo" id="adPromo">Ваш промокод: <b id="adPromoCode"></b></p>
+      <div id="adQrWrap">
+        <p class="ad-scan">Отсканируйте QR-код</p>
+        <div class="ad-qr" id="adQr"></div>
+        <a id="adLink" target="_blank" rel="noopener"></a>
+      </div>
+      <div class="ad-info" id="adInfo"></div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast">Рыбка отправлена в аквариум 🐟</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import {
+    getFirestore, collection, addDoc,
+    query, orderBy, limit, onSnapshot
+  } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB30f1ThA8Mwo6E_QXjNdPOJUYchayx9_E",
+    authDomain: "fish-39238.firebaseapp.com",
+    projectId: "fish-39238",
+    storageBucket: "fish-39238.firebasestorage.app",
+    messagingSenderId: "1073495960203",
+    appId: "1:1073495960203:web:de687f0f7666f2756b428e"
+  };
+  const fbApp = initializeApp(firebaseConfig);
+  const db = getFirestore(fbApp);
+  const fishCol = collection(db, 'fish');
+
+
+  /* ---------------- FISH SHAPE (shared geometry) ---------------- */
+  // Fish faces RIGHT (head near x=250, tail near x=10). ViewBox 300x190.
+  const bodyPath = "M65,95 C65,55 105,28 158,28 C215,28 252,58 252,95 C252,132 215,162 158,162 C105,162 65,135 65,95 Z";
+  const tailPath = "M70,95 L14,52 L32,95 L14,138 Z";
+  const combinedPathStr = bodyPath + " " + tailPath;
+
+  function fishPath2D(){ return new Path2D(combinedPathStr); }
+
+  function drawOutline(ctx, strokeColor){
+    ctx.clearRect(0,0,300,190);
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = 5;
+    ctx.stroke(fishPath2D());
+    // gill line
+    ctx.beginPath();
+    ctx.moveTo(118,60);
+    ctx.quadraticCurveTo(108,95,118,130);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = strokeColor;
+    ctx.globalAlpha = .55;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+    // eye
+    ctx.beginPath();
+    ctx.arc(205,72,11,0,Math.PI*2);
+    ctx.fillStyle = "#fff";
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = strokeColor;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(208,72,5,0,Math.PI*2);
+    ctx.fillStyle = "#0a2a35";
+    ctx.fill();
+    // top fin accent
+    ctx.beginPath();
+    ctx.moveTo(150,29);
+    ctx.quadraticCurveTo(170,5,196,22);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = strokeColor;
+    ctx.globalAlpha = .7;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+
+  /* ---------------- GENERATE A COLORED FISH IMAGE (for starter fish + export) ---------------- */
+  function renderFishDataURL(paintFn){
+    const c = document.createElement('canvas');
+    c.width = 300; c.height = 190;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = "#ffffff";
+    ctx.fill(fishPath2D());
+    ctx.save();
+    ctx.clip(fishPath2D());
+    paintFn(ctx);
+    ctx.restore();
+    drawOutline(ctx, "#0a2a35");
+    return c.toDataURL('image/png');
+  }
+
+  function starterFish(hue){
+    return renderFishDataURL(function(ctx){
+      const grad = ctx.createLinearGradient(60,30,255,160);
+      grad.addColorStop(0, `hsl(${hue}, 80%, 68%)`);
+      grad.addColorStop(1, `hsl(${hue+25}, 85%, 52%)`);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0,0,300,190);
+      // simple scale dots
+      ctx.fillStyle = "rgba(255,255,255,0.25)";
+      for(let i=0;i<10;i++){
+        ctx.beginPath();
+        ctx.arc(90+Math.random()*130, 45+Math.random()*95, 5+Math.random()*5, 0, Math.PI*2);
+        ctx.fill();
+      }
+    });
+  }
+
+  /* ---------------- AQUARIUM ---------------- */
+  const tank = document.getElementById('tank');
+  const fishLayer = document.getElementById('fishLayer');
+  const adLayer = document.getElementById('adLayer');
+  const fishCountEl = document.getElementById('fishCount');
+  const syncStatusEl = document.getElementById('syncStatus');
+  const fishes = [], byKey = new Map();
+  let tankW = tank.clientWidth, tankH = tank.clientHeight, adSeq = 0;
+
+  function pluralFish(n){
+    const m10 = n % 10, m100 = n % 100;
+    if(m10 === 1 && m100 !== 11) return "рыбка";
+    if([2,3,4].includes(m10) && ![12,13,14].includes(m100)) return "рыбки";
+    return "рыбок";
+  }
+  function updateCount(){
+    const n = fishes.filter(f => !f.ad).length;
+    fishCountEl.textContent = `${n} ${pluralFish(n)} плавает здесь`;
+  }
+  function register(f){ fishes.push(f); if(f.key) byKey.set(f.key, f); updateCount(); }
+  function removeFish(key){
+    const f = byKey.get(key); if(!f) return;
+    f.el.remove(); fishes.splice(fishes.indexOf(f), 1); byKey.delete(key); updateCount();
+  }
+  function makeSprite(src, w, ad){
+    const img = new Image();
+    img.src = src;
+    img.className = 'fish-sprite' + (ad ? ' ad-sprite' : '');
+    img.style.width = w + 'px';
+    (ad ? adLayer : fishLayer).appendChild(img);
+    return img;
+  }
+
+  function addFishToTank(src, opts){
+    opts = opts || {};
+    if(opts.key && byKey.has(opts.key)) return;
+    const w = opts.w || (70 + Math.random()*40);
+    const vx = (30 + Math.random()*55) * (Math.random() < .5 ? -1 : 1);
+    register({
+      key: opts.key, el: makeSprite(src, w, false), w, h: w*190/300, ad: false,
+      x: Math.random() * Math.max(0, tankW - w),
+      baseY: 90 + Math.random() * Math.max(40, tankH - 260),
+      vx, dir: vx > 0 ? 1 : -1,
+      amp: 8 + Math.random()*10, freq: .6 + Math.random()*.8, phase: Math.random()*6.28, t: 0
+    });
+  }
+
+  /* Рекламные рыбки берутся из Google-таблицы. Для каждой — две картинки
+     (смотрит вправо / смотрит влево): при развороте картинка меняется,
+     ничего не зеркалится, поэтому логотип, текст и QR всегда читаются. */
+  const ADS_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuCwOPGqAFfbsKS9iH5yngzgEof8jlO7OOIYgQZDyJL1tCS_Ss-PIRPd9p7u49eKgJlpI3EhDifxOz/pub?gid=0&single=true&output=csv';   // таблица с рекламой (CSV)
+  const AD_SIZES = { s: 140, m: 200, l: 280, xl: 380 };   // ширина рыбки в пикселях
+
+  function setAdMeta(f, ad){ f.name = ad.name; f.info = ad.info; f.link = ad.link; f.discount = ad.discount; f.promo = ad.promo; }
+
+  function placeAd(f){
+    const top = 80, bottom = tankH - 70;
+    const lanes = Math.max(1, Math.floor((bottom - top) / (f.h + 16)));
+    const laneH = (bottom - top) / lanes;
+    f.baseY = top + (f.lane % lanes) * laneH + (laneH - f.h) / 2;
+  }
+  function addAdFish(key, ad){
+    if(byKey.has(key)){ setAdMeta(byKey.get(key), ad); return; }
+    const w = (AD_SIZES[ad.s] || AD_SIZES.m) * Math.min(1, Math.max(.6, tankW / 1000));
+    const dir = Math.random() < .5 ? -1 : 1;
+    const img = makeSprite(dir > 0 ? ad.R : ad.L, w, true);
+    img.alt = ad.name || '';
+    new Image().src = dir > 0 ? ad.L : ad.R;   // заранее грузим вторую сторону
+    const f = { key, el: img, w, h: w*.5, ad: true, srcR: ad.R, srcL: ad.L, lane: adSeq++,
+      x: Math.random() * Math.max(0, tankW - w), baseY: 100, vx: dir * (28 + Math.random()*14), dir,
+      amp: 6, freq: .7, phase: Math.random()*6.28, t: 0, paused: false };
+    img.onload = () => { f.h = w * img.naturalHeight / img.naturalWidth; placeAd(f); };
+    img.addEventListener('pointerenter', () => f.paused = true);   // наведи — рыбка замрёт, QR можно считать
+    img.addEventListener('pointerleave', () => f.paused = false);
+    setAdMeta(f, ad);
+    img.addEventListener('click', () => openAd(f));
+    placeAd(f);
+    register(f);
+  }
+
+  let last = performance.now();
+  function turn(f, dir){ f.dir = dir; if(f.ad) f.el.src = dir > 0 ? f.srcR : f.srcL; }
+  function tick(now){
+    const dt = Math.min(.05, (now - last) / 1000); last = now;
+    tankW = tank.clientWidth; tankH = tank.clientHeight;
+    for(const f of fishes){
+      if(f.paused) continue;
+      f.t += dt; f.x += f.vx * dt;
+      if(f.x <= 0){ f.x = 0; f.vx = Math.abs(f.vx); turn(f, 1); }
+      if(f.x >= tankW - f.w){ f.x = tankW - f.w; f.vx = -Math.abs(f.vx); turn(f, -1); }
+      const y = Math.max(20, Math.min(tankH - f.h - 60, f.baseY + Math.sin(f.t*f.freq + f.phase) * f.amp));
+      f.el.style.transform = f.ad
+        ? `translate(${f.x}px, ${y}px) rotate(${Math.sin(f.t*.5 + f.phase) * 1.5}deg)`
+        : `translate(${f.x}px, ${y}px) scaleX(${f.dir})`;
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  /* ---- загрузка рекламы из таблицы ---- */
+  function parseCSV(t){
+    const rows = []; let row = [], cur = '', q = false;
+    for(let i = 0; i < t.length; i++){
+      const c = t[i];
+      if(q){ if(c === '"'){ if(t[i+1] === '"'){ cur += '"'; i++; } else q = false; } else cur += c; }
+      else if(c === '"') q = true;
+      else if(c === ','){ row.push(cur); cur = ''; }
+      else if(c === '\n' || c === '\r'){ if(c === '\r' && t[i+1] === '\n') i++; row.push(cur); rows.push(row); row = []; cur = ''; }
+      else cur += c;
+    }
+    if(cur || row.length){ row.push(cur); rows.push(row); }
+    return rows;
+  }
+  function imgUrl(u){   // ссылку из Google Drive превращаем в прямую ссылку на картинку
+    u = (u || '').trim();
+    const m = u.match(/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?[^ ]*?id=)([\w-]+)/);
+    return m ? 'https://lh3.googleusercontent.com/d/' + m[1] : u;
+  }
+  async function loadAds(){
+    if(!ADS_CSV_URL) return;
+    try{
+      const res = await fetch(ADS_CSV_URL, { cache: 'no-store' });
+      const rows = parseCSV(await res.text()).slice(1);   // первая строка — заголовки
+      const want = new Set();
+      rows.forEach(r => {
+        const [name, right, left, size, info, link, discount, promo] = r.map(x => (x || '').trim());
+        const R = imgUrl(right), L = imgUrl(left);
+        if(!/^https?:/.test(R) || !/^https?:/.test(L)) return;
+        const s = (size || 'm').toLowerCase();
+        const key = 'a:' + s + '|' + R + '|' + L;
+        want.add(key);
+        addAdFish(key, { name, R, L, s, info, link, discount, promo });
+      });
+      fishes.filter(f => f.ad && !want.has(f.key)).forEach(f => removeFish(f.key));   // строку удалили — рыбка уплыла
+    }catch(e){ console.error('Не удалось загрузить рекламу', e); }
+  }
+  loadAds();
+  setInterval(loadAds, 5 * 60 * 1000);
+
+  /* ---------------- ОКНО РЕКЛАМНОЙ РЫБКИ ---------------- */
+  const byId = id => document.getElementById(id);
+  const adModal = byId('adModal');
+
+  function openAd(f){
+    byId('adTitle').textContent = f.name || '';
+    const d = (f.discount || '').replace(/\s*%\s*$/, '');
+    const disc = byId('adDiscount');
+    disc.textContent = d ? `Вам скидка ${d}%` : ''; disc.hidden = !d;
+    byId('adPromo').hidden = !f.promo;
+    byId('adPromoCode').textContent = f.promo || '';
+    const qr = byId('adQr'), a = byId('adLink'), info = byId('adInfo');
+    qr.replaceChildren();
+    const okLink = /^https?:/.test(f.link || '');
+    byId('adQrWrap').hidden = !okLink;
+    if(okLink){
+      if(window.QRCode) new QRCode(qr, { text: f.link, width: 160, height: 160 });
+      a.href = f.link; a.textContent = f.link;
+    }
+    info.textContent = f.info || ''; info.hidden = !f.info;
+    adModal.showModal();
+  }
+  byId('adClose').addEventListener('click', () => adModal.close());
+  adModal.addEventListener('click', e => { if(e.target === adModal) adModal.close(); });
+
+  /* ---------------- FIRESTORE ---------------- */
+  const MAX_FISH = 80;
+  function setStatus(ok){
+    syncStatusEl.textContent = ok ? 'рыбки сохраняются и видны всем' : 'нет связи с базой — рыбки видны только у тебя';
+  }
+  const starters = () => [10,195,45].forEach(h => addFishToTank(starterFish(h), { key: 's:' + h }));
+
+  let firstSnap = true;
+  onSnapshot(query(fishCol, orderBy('createdAt', 'desc'), limit(MAX_FISH)), (snap)=>{
+    if(firstSnap){ firstSnap = false; if(snap.empty) starters(); }
+    snap.docChanges().forEach(c=>{
+      const key = 'u:' + c.doc.id;
+      if(c.type === 'removed'){ removeFish(key); return; }
+      const d = c.doc.data();
+      // видны: старые рыбки (без поля approved), одобренные, и только что отправленная — самому автору
+      if(d.approved !== false || c.doc.metadata.hasPendingWrites) addFishToTank(d.dataURL, { w: d.w, key });
+    });
+    setStatus(true);
+  }, (err)=>{
+    console.error('Firestore error', err);
+    setStatus(false);
+    if(firstSnap){ firstSnap = false; starters(); }
+  });
+
+
+  async function persistNewFish(record){
+    try{ await addDoc(fishCol, record); }
+    catch(e){ console.error(e); setStatus(false); showToast('Не получилось отправить рыбку'); }
+  }
+
+  /* ---------------- DECOR: bubbles + weeds ---------------- */
+  const bubbleLayer = document.getElementById('bubbleLayer');
+  function spawnBubble(){
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    const size = 6 + Math.random()*16;
+    b.style.width = size+'px';
+    b.style.height = size+'px';
+    b.style.left = (Math.random()*100)+'%';
+    b.style.animationDuration = (6+Math.random()*7)+'s';
+    bubbleLayer.appendChild(b);
+    setTimeout(()=> b.remove(), 14000);
+  }
+  setInterval(spawnBubble, 700);
+  for(let i=0;i<8;i++) setTimeout(spawnBubble, i*300);
+
+  const weedLayer = document.getElementById('weedLayer');
+  const weedSpecs = [
+    {left:'4%', h:120, w:26, color:'#2f7d5b', delay:'0s'},
+    {left:'12%', h:80, w:20, color:'#3a9468', delay:'.6s'},
+    {left:'80%', h:140, w:30, color:'#2a6f50', delay:'.3s'},
+    {left:'90%', h:90, w:20, color:'#3a9468', delay:'1s'},
+  ];
+  weedSpecs.forEach(s=>{
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS,'svg');
+    svg.setAttribute('viewBox', `0 0 ${s.w} ${s.h}`);
+    svg.setAttribute('width', s.w);
+    svg.setAttribute('height', s.h);
+    svg.classList.add('weed');
+    svg.style.left = s.left;
+    svg.style.animationDelay = s.delay;
+    const path = document.createElementNS(svgNS,'path');
+    const midX = s.w/2;
+    path.setAttribute('d', `M${midX},${s.h} C${midX+8},${s.h*0.6} ${midX-8},${s.h*0.4} ${midX},0`);
+    path.setAttribute('stroke', s.color);
+    path.setAttribute('stroke-width', Math.max(3, s.w*0.22));
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke-linecap','round');
+    svg.appendChild(path);
+    weedLayer.appendChild(svg);
+  });
+
+  window.addEventListener('resize', ()=>{ tankW = tank.clientWidth; tankH = tank.clientHeight; });
+
+  /* ---------------- EDITOR ---------------- */
+  const editor = document.getElementById('editor');
+  const openEditorBtn = document.getElementById('openEditor');
+  const closeEditorBtn = document.getElementById('closeEditor');
+  const paintCanvas = document.getElementById('paintCanvas');
+  const outlineCanvas = document.getElementById('outlineCanvas');
+  const inputCanvas = document.getElementById('inputCanvas');
+  const pCtx = paintCanvas.getContext('2d');
+  const oCtx = outlineCanvas.getContext('2d');
+  const iCtx = inputCanvas.getContext('2d');
+  const brushInput = document.getElementById('brush');
+  const colorPick = document.getElementById('colorPick');
+  const swatchesEl = document.getElementById('swatches');
+  const clearBtn = document.getElementById('clearBtn');
+  const sendBtn = document.getElementById('sendFish');
+  const toast = document.getElementById('toast');
+
+  const palette = ["#ff6b6b","#ffd166","#06d6a0","#4cc9f0","#a78bfa","#ff8fab","#ffffff","#2b2d42"];
+  let currentColor = "#ff8a5b";
+
+  function buildSwatches(){
+    swatchesEl.innerHTML = '';
+    palette.forEach((c,i)=>{
+      const b = document.createElement('button');
+      b.className = 'swatch' + (i===0 ? ' active':'');
+      b.style.background = c;
+      b.addEventListener('click', ()=>{
+        currentColor = c;
+        [...swatchesEl.children].forEach(ch=>ch.classList.remove('active'));
+        b.classList.add('active');
+      });
+      swatchesEl.appendChild(b);
+    });
+  }
+  buildSwatches();
+  colorPick.addEventListener('input', ()=>{
+    currentColor = colorPick.value;
+    [...swatchesEl.children].forEach(ch=>ch.classList.remove('active'));
+  });
+
+  function resetPaintLayer(){
+    pCtx.setTransform(1,0,0,1,0,0);
+    pCtx.clearRect(0,0,300,190);
+    pCtx.globalCompositeOperation = 'source-over';
+    pCtx.fillStyle = "#ffffff";
+    pCtx.fill(fishPath2D());
+    pCtx.globalCompositeOperation = 'source-atop';
+  }
+  function resetOutlineLayer(){
+    drawOutline(oCtx, "#0a2a35");
+  }
+  function initEditorCanvas(){
+    resetPaintLayer();
+    resetOutlineLayer();
+    iCtx.clearRect(0,0,300,190);
+  }
+
+  function openEditor(){
+    initEditorCanvas();
+    editor.classList.add('open');
+    if(OCR_CHECK) loadOCR().catch(()=>{});   // заранее грузим распознавание, чтобы проверка шла быстрее
+  }
+  function closeEditor(){
+    editor.classList.remove('open');
+  }
+  openEditorBtn.addEventListener('click', openEditor);
+  closeEditorBtn.addEventListener('click', closeEditor);
+  clearBtn.addEventListener('click', resetPaintLayer);
+
+  /* drawing with pointer events, mapped to the 300x190 internal resolution */
+  let drawing = false;
+  let lastPt = null;
+
+  function getPos(evt){
+    const rect = inputCanvas.getBoundingClientRect();
+    const scaleX = 300 / rect.width;
+    const scaleY = 190 / rect.height;
+    return {
+      x: (evt.clientX - rect.left) * scaleX,
+      y: (evt.clientY - rect.top) * scaleY
+    };
+  }
+
+  function strokeTo(pt){
+    pCtx.lineJoin = 'round';
+    pCtx.lineCap = 'round';
+    pCtx.strokeStyle = currentColor;
+    pCtx.lineWidth = Number(brushInput.value);
+    pCtx.beginPath();
+    if(lastPt){
+      pCtx.moveTo(lastPt.x, lastPt.y);
+    } else {
+      pCtx.moveTo(pt.x, pt.y);
+    }
+    pCtx.lineTo(pt.x, pt.y);
+    pCtx.stroke();
+    // also a dot for single taps
+    pCtx.beginPath();
+    pCtx.arc(pt.x, pt.y, Number(brushInput.value)/2, 0, Math.PI*2);
+    pCtx.fillStyle = currentColor;
+    pCtx.fill();
+    lastPt = pt;
+  }
+
+  inputCanvas.addEventListener('pointerdown', (e)=>{
+    drawing = true;
+    lastPt = null;
+    inputCanvas.setPointerCapture(e.pointerId);
+    strokeTo(getPos(e));
+  });
+  inputCanvas.addEventListener('pointermove', (e)=>{
+    if(!drawing) return;
+    strokeTo(getPos(e));
+  });
+  function stopDrawing(){ drawing = false; lastPt = null; }
+  inputCanvas.addEventListener('pointerup', stopDrawing);
+  inputCanvas.addEventListener('pointerleave', stopDrawing);
+  inputCanvas.addEventListener('pointercancel', stopDrawing);
+
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(()=> toast.classList.remove('show'), 2200);
+  }
+
+  /* ---------------- ПРОВЕРКА НАДПИСЕЙ (распознавание текста прямо в браузере) ---------------- */
+  const OCR_CHECK = true;        // false = не проверять надписи
+  const PREMODERATION = false;   // true = рыбки гостей видны всем только после одобрения в Firebase (нужны другие правила Firebase)
+
+  const squeeze = t => t.replace(/(.)\1+/g, '$1');   // «хууууй» → «хуй»
+  const BAD_ROOTS = ['пизд','блят','бляд','ебан','ебат','ебал','ебну','ебуч','залуп','мудак','мудил','пидор','пидар','пидр','шлюх','гандон','говн','дроч',
+    'нацист','гитлер','свастик','fuck','shit','bitch','cunt','nigg','whore','slut','faggot','nazi','hitler','heil','swastika','penis','vagina','porn'].map(squeeze);
+  const BAD_START = ['хуй','хуя','хуе','хуи','еблан','ебло','ебу','ебы','уеб','наеб','жоп','сука','суки','сучк','сиськ','писюн','писька','секс','порно','sex'].map(squeeze);
+  const BAD_EXACT = new Set(['хер','dick','cock','fag'].map(squeeze));
+  const LOOK = { a:'а', b:'в', c:'с', e:'е', h:'н', k:'к', m:'м', o:'о', p:'р', t:'т', x:'х', y:'у', '0':'о', '3':'з', '6':'б' };
+
+  function isBad(text){
+    const low = text.toLowerCase().replace(/ё/g, 'е');
+    const variants = [low, low.replace(/[a-z0-9]/g, ch => LOOK[ch] || ch)];   // второй вариант: латинские двойники читаем как кириллицу
+    return variants.some(v => {
+      const tokens = v.split(/[^a-zа-я]+/).filter(Boolean).map(squeeze);
+      const joined = tokens.join('');
+      return tokens.some(t => BAD_EXACT.has(t) || BAD_START.some(x => t.startsWith(x)) || BAD_ROOTS.some(r => t.includes(r)))
+          || BAD_ROOTS.some(r => joined.includes(r));
+    });
+  }
+
+  let ocrPromise = null;
+  function loadOCR(){
+    if(!ocrPromise){
+      ocrPromise = new Promise((ok, fail) => {
+        if(window.Tesseract) return ok();
+        const sc = document.createElement('script');
+        sc.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+        sc.onload = ok; sc.onerror = fail; document.head.appendChild(sc);
+      }).then(() => Tesseract.createWorker(['rus', 'eng']));
+      ocrPromise.catch(() => { ocrPromise = null; });
+    }
+    return ocrPromise;
+  }
+
+  function ocrVariants(out){   // три чёрно-белые версии рисунка, чтобы надпись любого цвета читалась лучше
+    const S = 3, W = 300*S, H = 190*S;
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const g = c.getContext('2d', { willReadFrequently: true });
+    g.fillStyle = '#fff'; g.fillRect(0, 0, W, H); g.drawImage(out, 0, 0, W, H);
+    const px = g.getImageData(0, 0, W, H).data;
+    const ma = document.createElement('canvas'); ma.width = W; ma.height = H;
+    const mg = ma.getContext('2d', { willReadFrequently: true }); mg.drawImage(out, 0, 0, W, H);
+    const inside = mg.getImageData(0, 0, W, H).data;
+    const make = ink => {
+      const v = document.createElement('canvas'); v.width = W; v.height = H;
+      const vg = v.getContext('2d'); const im = vg.createImageData(W, H);
+      for(let i = 0; i < W*H; i++){
+        const lum = .3*px[i*4] + .59*px[i*4+1] + .11*px[i*4+2];
+        const val = ink(lum, inside[i*4+3] > 128) ? 0 : 255;
+        im.data[i*4] = im.data[i*4+1] = im.data[i*4+2] = val; im.data[i*4+3] = 255;
+      }
+      vg.putImageData(im, 0, 0); return v;
+    };
+    return [ make(l => l < 130), make((l, ins) => ins && l > 205), make(l => l < 175) ];
+  }
+
+  async function checkFish(out){   // true = можно отправлять
+    if(!OCR_CHECK) return true;
+    const run = async () => {
+      const worker = await loadOCR();
+      let text = '';
+      for(const v of ocrVariants(out)){ const r = await worker.recognize(v); text += ' ' + r.data.text; }
+      return !isBad(text);
+    };
+    try{ return await Promise.race([run(), new Promise(res => setTimeout(() => res(true), 40000))]); }
+    catch(e){ console.warn('Проверка надписей недоступна, пропускаем', e); return true; }   // нет связи с библиотекой — не блокируем
+  }
+
+  sendBtn.addEventListener('click', async ()=>{
+    const out = document.createElement('canvas');
+    out.width = 300; out.height = 190;
+    const octx = out.getContext('2d');
+    octx.drawImage(paintCanvas, 0, 0);
+    octx.drawImage(outlineCanvas, 0, 0);
+    sendBtn.disabled = true;
+    const label = sendBtn.textContent; sendBtn.textContent = 'Проверяю рисунок…';
+    const ok = await checkFish(out);
+    sendBtn.disabled = false; sendBtn.textContent = label;
+    if(!ok){ showToast('На рыбке есть недопустимая надпись. Закрась её и попробуй снова 🙂'); return; }
+    const dataURL = out.toDataURL('image/png');
+    const w = 70 + Math.random()*40;
+    const rec = { dataURL, w, createdAt: Date.now() };
+    if(PREMODERATION) rec.approved = false;
+    closeEditor();
+    persistNewFish(rec);
+    setTimeout(()=> showToast(PREMODERATION ? 'Рыбка отправлена! Остальные увидят её после проверки 🐟' : 'Рыбка отправлена в аквариум 🐟'), 380);
+  });
+
+</script>
+</body>
+</html>
